@@ -12,6 +12,6 @@ apk link : https://play.google.com/store/apps/details?id=com.linbug.emotioncalen
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/18083080/166226443-5e1c27f8-1812-43ac-a0a4-a2f94ea582a6.png" width="300" height="600"/>
-  <img src="https://user-images.githubusercontent.com/18083080/166226444-cda7e6d1-d576-476a-beb0-b622e0688222.png" width="300" height="600"/>
+  <img src="https://user-images.githubusercontent.com/18083080/166254508-a2d67a22-4538-4666-ae65-7d5e55c5aa8a.png" width="300" height="600"/>
   <img src="https://user-images.githubusercontent.com/18083080/166226447-8c2f28c0-7c65-4d73-9157-6e270b55ce99.png" width="300" height="600"/>
 </p>
