@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "emotion_table")
 data class Emotion(
-    @PrimaryKey @ColumnInfo(name = "date") val date: String,
+    @PrimaryKey @ColumnInfo(name = "date") val date: Long,
     @ColumnInfo(name = "emotion")val emotion: Int,
     @ColumnInfo(name = "description")val description: String?
     )

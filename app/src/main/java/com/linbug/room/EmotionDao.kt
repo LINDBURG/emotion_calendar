@@ -9,7 +9,7 @@ interface EmotionDao {
     fun getDateEmotions(): Flow<List<Emotion>>
 
     @Query("SELECT * FROM emotion_table WHERE date = :date ORDER BY date ASC")
-    fun getDateEmotion(date: String): Flow<Emotion>
+    fun getDateEmotion(date: Long): Flow<Emotion>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEmotion(emotion: Emotion)

@@ -13,6 +13,9 @@ import com.linbug.room.EmotionApplication
 import com.linbug.room.EmotionViewModel
 import com.linbug.room.EmotionViewModelFactory
 import com.prolificinteractive.materialcalendarview.CalendarDay
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -35,7 +38,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun init() {
-        binding.calendarView.addDecorator(EmotionDecorator(Collections.singleton(CalendarDay.today())))
+        binding.calendarView.addDecorator(TodayDecorator(Collections.singleton(CalendarDay.today())))
+
+
+        val time = LocalDateTime.of(date.year, date.month, date.day, 0, 0)
+        val milliTime = time.atZone(ZoneId.systemDefault()).toInstant()?.toEpochMilli() ?: 0
+        val time2 = Instant.ofEpochMilli(milliTime).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        val date2 = CalendarDay.from(time2.year, time2.monthValue, time2.dayOfMonth)
+
 
         binding.spinner.adapter = ArrayAdapter.createFromResource(this, R.array.itemList, android.R.layout.simple_spinner_item)
         binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -47,6 +57,8 @@ class MainActivity : AppCompatActivity() {
                 //do nothing
             }
         }
+
+        decorateEmotions()
 
         binding.calendarView.setOnDateChangedListener { _, date, _ ->
             this.date = date
@@ -77,6 +89,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun calendarDay2milli(date: CalendarDay): Long {
+        val time = LocalDateTime.of(date.year, date.month, date.day, 0, 0)
+        return time.atZone(ZoneId.systemDefault()).toInstant()?.toEpochMilli() ?: 0
+    }
+
+    private fun milli2calendarDay(milli: Long): CalendarDay {
+        val time2 = Instant.ofEpochMilli(milli).atZone(ZoneId.systemDefault()).toLocalDateTime()
+        return CalendarDay.from(time2.year, time2.monthValue, time2.dayOfMonth)
+    }
+
     private fun showDescription() {
         binding.emotion.visibility = View.VISIBLE
         binding.spinner.visibility = View.GONE
@@ -96,9 +118,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateView() {
-        emotionViewModel.getDateEmotion(date.toString()).observe(this) { emotion ->
+        emotionViewModel.getDateEmotion(calendarDay2milli(date)).observe(this) { emotion ->
             Log.d("linburg", "view2")
             checkDate(emotion)
+        }
+    }
+
+    private fun decorateEmotions() {
+        emotionViewModel.allEmotions.observe(this) { emotions ->
+            val calList = ArrayList<CalendarDay>()
+            for (emotion in emotions) {
+                val day = milli2calendarDay(emotion.date)
+                calList.add(day)
+                binding.calendarView.addDecorators(EmotionDecorator(applicationContext, day, emotion.emotion))
+            }
         }
     }
 
@@ -113,16 +146,15 @@ class MainActivity : AppCompatActivity() {
 
         binding.spinner.setSelection(id)
         binding.emotion.setImageResource(resId)
-
     }
 
     private fun saveEmotion(date: CalendarDay, emotion: Int, description: String?) {
-        val emotionSet = Emotion(date.toString(), emotion, description)
+        val emotionSet = Emotion(calendarDay2milli(date), emotion, description)
         emotionViewModel.insertEmotion(emotionSet)
     }
 
     private fun removeEmotion(date: CalendarDay) {
-        val emotion = Emotion(date.toString(), 0, null)
+        val emotion = Emotion(calendarDay2milli(date), 0, null)
         emotionViewModel.deleteEmotion(emotion)
     }
 
